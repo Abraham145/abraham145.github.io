@@ -25,7 +25,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
             background: #0f0c29;
         }
 
@@ -44,7 +44,7 @@
 
         .container {
             background: var(--card-background);
-            padding: 40px;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(12px);
@@ -58,33 +58,33 @@
         }
 
         .profile-img {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid var(--accent-glow);
             box-shadow: 0 0 25px rgba(0, 229, 255, 0.7);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         h1 {
-            font-size: 2.8em;
+            font-size: 2.2em;
             margin: 0 0 10px;
             font-weight: 700;
             letter-spacing: 1px;
         }
 
         .intro-text {
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: var(--secondary-text);
-            min-height: 30px;
+            min-height: 50px;
             font-weight: 300;
         }
 
         .typewriter-cursor {
             display: inline-block;
             width: 2px;
-            height: 1.2em;
+            height: 1.1em;
             background-color: var(--accent-glow);
             animation: blink 0.8s infinite;
             vertical-align: bottom;
@@ -96,10 +96,10 @@
         }
 
         .buttons {
-            margin-top: 35px;
+            margin-top: 30px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column; /* Stack buttons on mobile */
+            align-items: center;
             gap: 15px;
         }
 
@@ -116,6 +116,8 @@
             border: 1px solid var(--border-color);
             font-size: 1em;
             font-weight: 400;
+            width: 100%; /* Make buttons full-width on mobile */
+            justify-content: center;
         }
 
         .btn:hover {
@@ -129,6 +131,37 @@
             width: 22px;
             height: 22px;
             fill: currentColor;
+        }
+
+        /* Media Query for larger screens */
+        @media (min-width: 768px) {
+            .container {
+                padding: 40px;
+            }
+
+            .profile-img {
+                width: 150px;
+                height: 150px;
+            }
+
+            h1 {
+                font-size: 2.8em;
+            }
+
+            .intro-text {
+                font-size: 1.2em;
+                min-height: 30px;
+            }
+
+            .buttons {
+                flex-direction: row; /* Buttons in a row on larger screens */
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .btn {
+                width: auto; /* Buttons take up their content width on larger screens */
+            }
         }
     </style>
 </head>
@@ -179,32 +212,42 @@
                 i++;
                 setTimeout(typeWriter, 55);
             } else {
+                // Remove cursor after typing is complete
                 typewriterElement.innerHTML = textToType;
             }
         }
 
         // 3D tilt effect for the card
         const card = document.getElementById('portfolio-card');
-        const tiltEffect = (e) => {
-            const { offsetWidth: width, offsetHeight: height } = card;
-            let { clientX: x, clientY: y } = e;
 
-            const rect = card.getBoundingClientRect();
-            x = x - rect.left;
-            y = y - rect.top;
+        // Disable tilt effect on touch devices
+        const isTouchDevice = () => {
+            return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        }
 
-            const xRotation = 20 * ((y - height / 2) / height);
-            const yRotation = -20 * ((x - width / 2) / width);
-            
-            card.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
-        };
+        if (!isTouchDevice()) {
+            const tiltEffect = (e) => {
+                const { offsetWidth: width, offsetHeight: height } = card;
+                let { clientX: x, clientY: y } = e;
 
-        const resetTilt = () => {
-            card.style.transform = `perspective(1000px) rotateX(0) rotateY(0)`;
-        };
+                const rect = card.getBoundingClientRect();
+                x = x - rect.left;
+                y = y - rect.top;
 
-        document.addEventListener('mousemove', tiltEffect);
-        card.addEventListener('mouseleave', resetTilt);
+                const xRotation = 20 * ((y - height / 2) / height);
+                const yRotation = -20 * ((x - width / 2) / width);
+                
+                card.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+            };
+
+            const resetTilt = () => {
+                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0)`;
+            };
+
+            document.addEventListener('mousemove', tiltEffect);
+            card.addEventListener('mouseleave', resetTilt);
+        }
+
         document.addEventListener('DOMContentLoaded', typeWriter);
     </script>
 </body>
